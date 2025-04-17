@@ -4,7 +4,7 @@ import toplevel_report_info
 
 # 建立一個 dictionary 裝所有的 report
 dict_reports = {}
-dict_reportinfo = {"no":"", "name":"", "type":"", "sample":""}
+dict_reportinfo = {"no":"", "title": "", "name":"", "type":"", "sample":""}
 
 window = tk.Tk()
 window.title("Notebook 練習")
@@ -88,25 +88,36 @@ frame_add_3.pack()
 label_other = ttk.Label(frame_add_3, text="...尚未規劃...")
 label_other.grid(row=0, column=0)
 
+def frame_in_reportList(event):
+    #檢查是否點擊到頁籤
+    selected_tab = event.widget.index("current")
+    print("Event widget:", event.widget)
+    print("Selected tab:", selected_tab)
+    print(dict_reports)
+    
+    match selected_tab:
+        case 1:
+            for widget in frame_list.winfo_children():
+                widget.destroy()
+            for i in dict_reports:
+                # v = 
+                btn_reportList = ttk.Button(frame_list, text=dict_reports[i]["title"], command=lambda name=i: toplevel_report_info.run(window, i, dict_reports))
+                btn_reportList.pack(fill="x")
+                
+    
+
 def confirm():
-    # report_no = entry_no.get() # str
-    
-    dict_reportinfo["no"] = entry_no.get()
-    dict_reportinfo["name"] = entry_name.get()
-    dict_reportinfo["type"] = combobox_type.get()
-    
-    dict_reports.update({entry_no.get():entry_no.get()})
+    dict_reports.update({entry_no.get():{"no": entry_no.get(),
+                                         "title": entry_no.get()+" "+entry_name.get(),
+                                         "name": entry_name.get(),
+                                         "type": combobox_type.get()}})
+    # print("目前資料:\n", dict_reports)
+
     # 還要收集 sampleType (透過 toggle button)
-    def info():
-        b_title = btn_title.cget("text")
-        toplevel_report_info.run(window, b_title, dict_reportinfo)
     
-    # 放入 frame_list
-    reportTitle = entry_no.get()+" "+entry_name.get()
-    btn_title= ttk.Button(frame_list, text=reportTitle, command=info)
-    btn_title.pack(fill="x")
     
 button_confirm = ttk.Button(frame_add, text="新增", command=confirm)
 button_confirm.pack()
+nb.bind("<<NotebookTabChanged>>", frame_in_reportList)
 
 window.mainloop()
